@@ -1,21 +1,21 @@
-# Kubernetes Node Affinity and Service Configuration
+# Kubernetes Node, Pod, Pod Anti Affinity and Service Configuration
 
 ## Project Overview
 
-This project demonstrates how to configure **Node Affinity** in Kubernetes to control Pod scheduling and expose an application using a Kubernetes Service.
+This project demonstrates how to configure **Node, Pod, Pod Anti Affinity** in Kubernetes to control Pod scheduling and expose an application using a Kubernetes Service.
 
-Node Affinity helps schedule Pods on specific nodes based on node labels, while a Service provides network access to the application Pods.
+Node, Pod, Pod Anti Affinity helps schedule Pods on specific nodes based on node labels, while a Service provides network access to the application Pods.
 
 ## Technologies Used
 
 - Kubernetes
 - kubectl
 - YAML
-- NGINX (sample application)
+- web applications
 
 ## Project Objectives
 
-- Understand Kubernetes Node Affinity.
+- Understand Kubernetes Node, Pod, Pod anti Affinity.
 - Schedule Pods based on node labels.
 - Create and manage Kubernetes resources using YAML manifests.
 - Expose application Pods using a Kubernetes Service.
@@ -27,28 +27,26 @@ Node Affinity helps schedule Pods on specific nodes based on node labels, while 
 .
 ├── nodeaffinity_pod.yml
 ├── nodeaffinity_service.yml
+├── podaffinity_pod.yml
+├── podaffinity_service.yml
+├── podantiaffinity_pod.yml
+├── podantiaffinity_service.yml
 └── README.md
 ```
 
 ## Step 1: Check Cluster Nodes
 
-```bash
 kubectl get nodes -o wide
-```
 
 ## Step 2: Label a Node
 
 Add a label to the node where you want the Pod to be scheduled.
 
-```bash
 kubectl label nodes <node-name> app=nginx
-```
 
 Verify the label:
 
-```bash
 kubectl get nodes --show-labels
-```
 
 ## Step 3: Configure Node Affinity
 
@@ -56,7 +54,6 @@ In `nodeaffinity_pod.yml`, configure the Pod's `affinity` section to match the n
 
 Example:
 
-```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -78,28 +75,22 @@ spec:
                 operator: In
                 values:
                   - nginx
-```
 
 This configuration requires Kubernetes to schedule the Pod on a node whose `app` label has the value `nginx`.
 
 ## Step 4: Create the Pod
 
-```bash
 kubectl apply -f nodeaffinity_pod.yml
-```
 
 Verify the Pod:
 
-```bash
 kubectl get pods -o wide
 kubectl describe pod nodeaffinity-pod
-```
 
 ## Step 5: Configure the Kubernetes Service
 
-Create `nodeaffinity_service.yml`:
+Create `nodeaffinity_service.yml:
 
-```yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -112,37 +103,28 @@ spec:
     - port: 80
       targetPort: 80
       nodePort: 30080
-```
 
 **Important:** The Service selector `app: nginx` must match the Pod label `app: nginx`.
 
 ## Step 6: Create the Service
 
-```bash
 kubectl apply -f nodeaffinity_service.yml
-```
 
 Verify the Service:
 
-```bash
 kubectl get services
 kubectl describe service nodeaffinity-service
 kubectl get endpoints nodeaffinity-service
-```
 
 ## Step 7: Access the Application
 
 Check the NodePort:
 
-```bash
 kubectl get service nodeaffinity-service
-```
 
 Access the application using:
 
-```text
 http://<node-ip>:30080
-```
 
 Ensure the node IP is reachable and the required firewall or security-group rules allow port `30080`.
 

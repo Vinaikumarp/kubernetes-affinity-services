@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: movie-bookings
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: movies
+  template:
+    metadata:
+      labels:
+        app: movies
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: movies
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: podaffinity
+          image: vinaikumarp/movies-image:1.2
+

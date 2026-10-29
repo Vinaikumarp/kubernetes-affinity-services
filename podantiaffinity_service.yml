@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: podantiaffinityservice
+spec:
+  type: LoadBalancer
+  selector:
+    app: frame
+  ports:
+    - port: 80
+      targetPort: 80
